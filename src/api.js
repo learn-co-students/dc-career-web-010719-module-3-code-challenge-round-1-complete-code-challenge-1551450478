@@ -3,6 +3,15 @@ class BaseAPI {
     this.base = 'https://randopic.herokuapp.com'
   }
 
+  // try to ensure, whatever the input
+  // we receive an id in return
+  id(obj_or_id) {
+    if (typeof obj_or_id === 'object' && 'id' in obj_or_id)
+      return obj_or_id.id
+    else
+      return obj_or_id
+  }
+
   async request(endpoint, opts) {
     const url = `${this.base}/${endpoint}`
     return fetch(url, opts).then(res => res.json())
@@ -29,7 +38,8 @@ class BaseAPI {
   }
 
   delete(endpoint, obj) {
-    const url = `${endpoint}/${obj.id}`
+    const id = this.id(obj)
+    const url = `${endpoint}/${id}`
     return this.request(url, {method: "DELETE"})
   }
 }
@@ -40,12 +50,12 @@ class ImageAPI extends BaseAPI {
     this.endpoint = 'images'
   }
 
-  id(image_or_id) {
-    if (typeof image_or_id === 'object' && 'id' in image_or_id)
-      return image_or_id.id
-    else
-      return image_or_id
-  }
+  // id(image_or_id) {
+  //   if (typeof image_or_id === 'object' && 'id' in image_or_id)
+  //     return image_or_id.id
+  //   else
+  //     return image_or_id
+  // }
 
   find(id) {
     return this.request(`${this.endpoint}/${id}`)
@@ -58,9 +68,9 @@ class ImageAPI extends BaseAPI {
   }
 
   comment(image, content) {
-    const id = this.id(image)
+    // const id = this.id(image)
     const commentAPI = new CommentAPI()
-    return commentAPI.commentImage(id, content)
+    return commentAPI.commentImage(this.id(image), content)
   }
 }
 
@@ -86,5 +96,11 @@ class CommentAPI extends BaseAPI {
       image_id: imageId,
       content: content
     })
+  }
+
+  remove(comment) {
+    const id = this.id(comment)
+    const url = `${this.endpoint}/${id}`
+    return this.request(url, {method: "DELETE"})
   }
 }

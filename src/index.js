@@ -31,6 +31,7 @@ class App {
 }
 
 App.api = new ImageAPI()
+App.commentAPI = new CommentAPI()
 App.image
 
 /* events */
@@ -44,6 +45,11 @@ function handleSubmit(e) {
   const content = App.form().querySelector('input[name="comment"]').value
   addComment(App.image, content)
   App.form().reset()
+}
+
+function handleDelete(comment) {
+  removeComment(comment)
+  findCommentElement(comment).remove()
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -74,6 +80,10 @@ function addComment(image, content) {
     .then(renderComment)
 }
 
+function removeComment(comment) {
+  App.commentAPI.remove(comment)
+}
+
 /* dom */
 
 function renderImage(image) {
@@ -93,9 +103,20 @@ function renderComments(comments) {
 
 function renderComment(comment) {
   const li = document.createElement('li')
+  li.classList.add('comment')
   li.innerText = comment.content
   li.dataset.id = comment.id
+
+  const deleteBtn = document.createElement('button')
+  deleteBtn.innerText = 'x'
+  deleteBtn.addEventListener('click', e => handleDelete(comment))
+  li.appendChild(deleteBtn)
+
   App.comments().appendChild(li)
+}
+
+function findCommentElement(comment) {
+  return document.querySelector(`.comment[data-id="${comment.id}"]`)
 }
 
 function incrementLikes() {
