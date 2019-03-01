@@ -43,4 +43,20 @@ class ImageAPI extends BaseAPI {
   find(id) {
     return this.request(`${this.endpoint}/${id}`)
   }
+
+  like(image) {
+    const likeAPI = new LikeAPI()
+    return likeAPI.likeImage(image.id)
+  }
+}
+
+class LikeAPI extends BaseAPI {
+  constructor() {
+    super()
+    this.endpoint = 'likes'
+  }
+
+  likeImage(imageId) {
+    return this.post(this.endpoint, {image_id: imageId})
+  }
 }

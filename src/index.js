@@ -19,10 +19,13 @@ class App {
     return document.querySelector('#comments')
   }
 }
+
 App.imageAPI = new ImageAPI()
+App.image
 
 document.addEventListener('DOMContentLoaded', () => {
   let imageId = 2122 //Enter the id from the fetched image here
+  document.querySelector('#like_button').addEventListener('click', handleLike)
   loadImage(imageId)
 })
 
@@ -30,7 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadImage(id) {
   App.imageAPI.find(id)
-    .then(renderImage)
+    .then(image => {
+      App.image = image
+      renderImage(image)
+    })
+}
+
+function likeImage(image) {
+  App.imageAPI.like(image)
+  incrementLikes()
 }
 
 /* dom */
@@ -51,4 +62,15 @@ function renderComment(comment, parent) {
   const li = document.createElement('li')
   li.innerText = comment.content
   parent.appendChild(li)
+}
+
+function incrementLikes() {
+  const likes = parseInt(App.likes().innerText)
+  App.likes().innerText = `${likes+1} Like(s)`
+}
+
+/* events */
+
+function handleLike(e) {
+  likeImage(image)
 }
