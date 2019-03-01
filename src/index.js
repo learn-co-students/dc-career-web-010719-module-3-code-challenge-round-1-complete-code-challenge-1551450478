@@ -18,7 +18,7 @@ class App {
   }
 
   static likeBtn() {
-    return document.querySelector('#likes')
+    return document.querySelector('#like_button')
   }
 
   static form() {
@@ -36,7 +36,7 @@ App.image
 /* events */
 
 function handleLike(e) {
-  likeImage(image)
+  likeImage(App.image)
 }
 
 function handleSubmit(e) {
