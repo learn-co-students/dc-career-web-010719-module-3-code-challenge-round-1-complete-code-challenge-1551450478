@@ -40,13 +40,27 @@ class ImageAPI extends BaseAPI {
     this.endpoint = 'images'
   }
 
+  id(image_or_id) {
+    if (typeof image_or_id === 'object' && 'id' in image_or_id)
+      return image_or_id.id
+    else
+      return image_or_id
+  }
+
   find(id) {
     return this.request(`${this.endpoint}/${id}`)
   }
 
   like(image) {
+    const id = this.id(image)
     const likeAPI = new LikeAPI()
-    return likeAPI.likeImage(image.id)
+    return likeAPI.likeImage(id)
+  }
+
+  comment(image, content) {
+    const id = this.id(image)
+    const commentAPI = new CommentAPI()
+    return commentAPI.commentImage(id, content)
   }
 }
 
@@ -58,5 +72,19 @@ class LikeAPI extends BaseAPI {
 
   likeImage(imageId) {
     return this.post(this.endpoint, {image_id: imageId})
+  }
+}
+
+class CommentAPI extends BaseAPI {
+  constructor() {
+    super()
+    this.endpoint = 'comments'
+  }
+
+  commentImage(imageId, content) {
+    return this.post(this.endpoint, {
+      image_id: imageId,
+      content: content
+    })
   }
 }

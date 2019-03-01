@@ -1,4 +1,10 @@
+/* core app */
+
 class App {
+  static card() {
+    return document.querySelector('#image_card')
+  }
+
   static img() {
     return document.querySelector('img#image')
   }
@@ -11,6 +17,10 @@ class App {
     return document.querySelector('#likes')
   }
 
+  static likeBtn() {
+    return document.querySelector('#likes')
+  }
+
   static form() {
     return document.querySelector('form#comment_form')
   }
@@ -20,19 +30,34 @@ class App {
   }
 }
 
-App.imageAPI = new ImageAPI()
+App.api = new ImageAPI()
 App.image
 
+/* events */
+
+function handleLike(e) {
+  likeImage(image)
+}
+
+function handleSubmit(e) {
+  e.preventDefault()
+  const content = App.form().querySelector('input[name="comment"]').value
+  addComment(App.image, content)
+  App.form().reset()
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  let imageId = 2122 //Enter the id from the fetched image here
-  document.querySelector('#like_button').addEventListener('click', handleLike)
+  App.likeBtn().addEventListener('click', handleLike)
+  App.form().addEventListener('submit', handleSubmit)
+
+  const imageId = 2122 //Enter the id from the fetched image here
   loadImage(imageId)
 })
 
 /* api/data */
 
 function loadImage(id) {
-  App.imageAPI.find(id)
+  App.api.find(id)
     .then(image => {
       App.image = image
       renderImage(image)
@@ -40,37 +65,40 @@ function loadImage(id) {
 }
 
 function likeImage(image) {
-  App.imageAPI.like(image)
+  App.api.like(image)
   incrementLikes()
+}
+
+function addComment(image, content) {
+  App.api.comment(image, content)
+    .then(renderComment)
 }
 
 /* dom */
 
 function renderImage(image) {
+  App.card().dataset.id = image.id
+  App.img().dataset.id = image.id
   App.img().src = image.url
+
   App.likes().innerText = `${image.like_count} Like(s)`
   App.name().innerText = image.name
+
   renderComments(image.comments)
 }
 
 function renderComments(comments) {
-  const container = App.comments()
-  comments.forEach(c => renderComment(c, container))
+  comments.forEach(renderComment)
 }
 
-function renderComment(comment, parent) {
+function renderComment(comment) {
   const li = document.createElement('li')
   li.innerText = comment.content
-  parent.appendChild(li)
+  li.dataset.id = comment.id
+  App.comments().appendChild(li)
 }
 
 function incrementLikes() {
   const likes = parseInt(App.likes().innerText)
   App.likes().innerText = `${likes+1} Like(s)`
-}
-
-/* events */
-
-function handleLike(e) {
-  likeImage(image)
 }
