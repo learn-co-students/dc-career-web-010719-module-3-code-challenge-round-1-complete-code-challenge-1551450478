@@ -50,13 +50,6 @@ class ImageAPI extends BaseAPI {
     this.endpoint = 'images'
   }
 
-  // id(image_or_id) {
-  //   if (typeof image_or_id === 'object' && 'id' in image_or_id)
-  //     return image_or_id.id
-  //   else
-  //     return image_or_id
-  // }
-
   find(id) {
     return this.request(`${this.endpoint}/${id}`)
   }
